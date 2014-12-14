@@ -1,0 +1,18 @@
+[
+    {
+        "name": "files",
+        "type": "filesystem",
+        "destinations": [""],
+        "sources": [
+            "files"
+        ]
+    },
+    {
+        "name": "index.html",
+        "type": "text",
+        "destinations": ["index.html"],
+        "sources": [
+            "html/index.html"
+        ]
+    }
+]

@@ -1,0 +1,12 @@
+{
+    "name": "deliveryboy-filesystem-extension",
+    "description": "Deliveryboy Filesystem Extension",
+    "main": "index.js",
+    "version": "0.0.1",
+    "engines": {
+        "node" : ">=0.10.X"
+    },
+    "dependencies": {
+        "ncp"      : "~0.6.0"
+    }
+}

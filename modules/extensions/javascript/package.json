@@ -1,0 +1,13 @@
+{
+    "name": "deliveryboy-javascript-extension",
+    "description": "Deliveryboy Javascript Parser Extension",
+    "main": "index.js",
+    "version": "0.0.1",
+    "engines": {
+        "node" : ">=0.10.X"
+    },
+    "dependencies": {
+        "jshint"      : "~2.5.2",
+        "uglify-js"      : "~2.4.15"
+    }
+}

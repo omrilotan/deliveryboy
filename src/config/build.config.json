@@ -1,0 +1,5 @@
+{
+    "OUTPUT_DIRECTORY": "output",
+    "SOURCES_DIRECTORY": "src",
+    "DEFAULT_PORT": 80
+}

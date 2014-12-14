@@ -1,0 +1,14 @@
+[
+    {
+        "name": "main",
+        "vars": {
+            "MINIFY": "false",
+            "ROOT": "v1",
+            "FAVICON": "favicon.ico"
+        },
+        "units": [
+            "index.html",
+            "files"
+        ]
+    }
+]

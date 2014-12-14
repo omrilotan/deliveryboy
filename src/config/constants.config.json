@@ -1,0 +1,34 @@
+{
+    "tags": {
+        "OPEN": "<%ASSET%>",
+        "CLOSE": "</%ASSET%>"
+    },
+
+    "themes": {
+        "harmony": {
+            "COLOUR": "#666"
+        }
+    },
+    "cultures": {
+        "en-GB": {
+            "BEGINNING": "left",
+            "END": "right",
+            "DIRECTION": "ltr",
+            "OPPOSITE": "rtl"
+        },
+        "he-IL": {
+            "BEGINNING": "right",
+            "END": "left",
+            "DIRECTION": "rtl",
+            "OPPOSITE": "ltr"
+        }
+    },
+
+    "cssvars": {
+        "CSS_ROOT": ""
+    },
+
+    "preferences": {},
+
+    "assets": {}
+}

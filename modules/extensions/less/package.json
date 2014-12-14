@@ -1,0 +1,12 @@
+{
+    "name": "deliveryboy-less-extension",
+    "description": "Deliveryboy Less Css Parser Extension",
+    "main": "index.js",
+    "version": "0.0.1",
+    "engines": {
+        "node" : ">=0.10.X"
+    },
+    "dependencies": {
+        "less"      : "~1.7.4"
+    }
+}
