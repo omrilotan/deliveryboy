@@ -8,7 +8,8 @@ exports.file     = require("./file");
 exports.render   = require("./render");
 exports.serve    = require("./serve");
 exports.request  = require("./request");
-exports.string   = require("./string");
+exports.ready    = require("./ready");
+exports.first    = require("./first");
 
 exports.stringClean = function (string) {
     return string.replace((new RegExp(global.config.constants.tags.OPEN)), "")

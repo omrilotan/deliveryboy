@@ -1,0 +1,21 @@
+* {
+    margin:0;
+    padding:0;
+    border:0;
+}
+
+::selection {
+    background:@color-main;
+    color:#fff;
+    text-shadow:none;
+}
+::-webkit-selection {
+    background:@color-main;
+    color:#fff;
+    text-shadow:none;
+}
+::-moz-selection {
+    background:@color-main;
+    color:#fff;
+    text-shadow:none;
+}

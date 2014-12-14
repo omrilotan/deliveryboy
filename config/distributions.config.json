@@ -2,9 +2,9 @@
     {
         "name": "main",
         "vars": {
-            "MINIFY": "false",
+            "MINIFY": "flase",
             "ROOT": "v1",
-            "FAVICON": "favicon.ico"
+            "CULTURE": "he-IL"
         },
         "units": [
             "index.html",

@@ -1,0 +1,15 @@
+@-webkit-keyframes roll {
+    0%   { .rotate(0deg); }
+    100%  { .rotate(360deg); }
+}
+@-moz-keyframes roll {
+    0%   { .rotate(0deg); }
+    100%  { .rotate(360deg); }
+}
+@keyframes roll {
+    0%   { .rotate(0deg); }
+    100%  { .rotate(360deg); }
+}
+.roll () {
+    .animate(roll 1s infinite linear);
+}
