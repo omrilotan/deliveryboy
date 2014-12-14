@@ -7,12 +7,13 @@
         "type": "git",
         "url": "https://bitbucket.org/speax/deliveryboy.git"
     },
-    "author": "",
+    "author": "omri",
     "license": "None",
-    "description": "",
+    "description": "Build system for static files",
     "dependencies": {
         "mkdirp": "^0.5.0",
         "ncp": "^0.6.0",
-        "prompt": "^0.2.13"
+        "prompt": "^0.2.13",
+        "markdown": "^0.5.0"
     }
 }
