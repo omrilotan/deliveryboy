@@ -8,7 +8,9 @@ var http = require("http"),
             len = collection.length;
 
         for (; i < len; i++) {
-            if (collection[i][property][0] == name) {
+            if (!collection[i].hasOwnProperty(property)) {
+                console.log("This collection has no 'destinations' property");
+            } else if (collection[i][property][0] == name) {
                 return collection[i];
             }
         }
