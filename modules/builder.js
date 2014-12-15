@@ -22,6 +22,7 @@ exports.config = function (callback) {
 
 exports.item = function (unit, vars, callback) {
     var sources = [];
+    
     unit.sources.forEach(function (source) {
 
         // Remove commented out items, marked with Number sign (#) as first character

@@ -1,15 +1,16 @@
 var exports = {};
 
-exports.builder  = require("./builder");
-exports.prompter = require("./prompter");
-exports.actions   = require("./actions");
-exports.serve    = require("./serve");
-exports.file     = require("./file");
-exports.render   = require("./render");
-exports.serve    = require("./serve");
-exports.request  = require("./request");
-exports.ready    = require("./ready");
-exports.first    = require("./first");
+exports.builder     = require("./builder");
+exports.prompter    = require("./prompter");
+exports.actions     = require("./actions");
+exports.serve       = require("./serve");
+exports.publication = require("./publication");
+exports.file        = require("./file");
+exports.render      = require("./render");
+exports.serve       = require("./serve");
+exports.request     = require("./request");
+exports.ready       = require("./ready");
+exports.first       = require("./first");
 
 exports.stringClean = function (string) {
     return string.replace((new RegExp(global.config.constants.tags.OPEN)), "")

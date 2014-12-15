@@ -2,8 +2,8 @@ global.tools = require("./modules/tools");
 
 global.CONFIG_DIRECTORY = "config";
 
-
 global.config = {};    // Store configuration details from file later
+
 
 global.refresh = function (callback) {
     // Read configuration file
@@ -24,6 +24,7 @@ global.refresh = function (callback) {
             callback();
         }
     });
+
     return;
 };
 

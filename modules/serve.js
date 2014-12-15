@@ -59,7 +59,7 @@ exports.start = function (result) {
         return;
     }
 
-    var distribution = global.config.distributions[result.distribution] || global.config.distributions[0],
+    var distribution = global.tools.publication(result),
         port = result.port,
         root = !!distribution.vars.ROOT ? distribution.vars.ROOT : "",
         serving = global.config.build.OUTPUT_DIRECTORY + "/" + root;
