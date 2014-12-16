@@ -1,4 +1,4 @@
-var markdown = require( "markdown" ).markdown;
+var markdown = require( "./markdown" ).markdown;
 var exports = function (data, callback) {
     global.tools.file.concat(data.conf.sources, function (result) {
         var string = global.tools.stringReplacements(result.toString(), data.vars);

@@ -7,13 +7,22 @@
         "type": "git",
         "url": "https://bitbucket.org/speax/deliveryboy.git"
     },
-    "author": "omri",
+    "author": "speax",
+    "maintainers": [
+        {
+            "name": "Omri",
+            "email": "omri.lotan@speax.io",
+            "web": "https://speax.io"
+        }
+    ],
     "license": "None",
     "description": "Build system for static files",
+    "engines": {
+        "node" : ">=0.10.X"
+    },
     "dependencies": {
         "mkdirp": "^0.5.0",
         "ncp": "^0.6.0",
-        "prompt": "^0.2.13",
-        "markdown": "^0.5.0"
+        "prompt": "^0.2.13"
     }
 }

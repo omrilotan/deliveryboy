@@ -1,0 +1,12 @@
+{
+    "name": "deliveryboy-markdown-extension",
+    "description": "Deliveryboy Markdown Parser Extension",
+    "main": "index.js",
+    "version": "0.0.1",
+    "engines": {
+        "node" : ">=0.10.X"
+    },
+    "dependencies": {
+        "markdown": "^0.5.0"
+    }
+}
