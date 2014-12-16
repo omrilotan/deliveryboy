@@ -103,7 +103,7 @@ exports.build = function (distribution, callback) {
             return;
         }
 
-        exports.lastBuild(root);
+        global.tools.lastBuild(root);
 
         exports.item(u,
             item.vars,
