@@ -96,13 +96,15 @@ exports.build = function (distribution, callback) {
                             "/" +
                             item.vars.ROOT +
                             "/";
-        global.tools.file.write(root + "last-build.txt", global.tools.dateToString(new Date()), function () {});
 
         if (u === null) {
             console.log(unit + " not specified in units list");
             callback("");
             return;
         }
+
+        exports.lastBuild(root);
+
         exports.item(u,
             item.vars,
             function (output) {

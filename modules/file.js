@@ -51,7 +51,7 @@ exports.readFilesInDir = function (location, callback) {
 exports.makeDir = function (location, callback) {
     mkdirp(location, function (err) {
         if (err) { console.log(err); };
-        callback();
+        if (typeof callback === "function") { callback(); }
     });
 };
 
@@ -61,7 +61,7 @@ exports.copyDir = function (from, to, callback) {
                 to,
                 function (err) {
                     if (err) { console.error(err); }
-                    callback();
+                    if (typeof callback === "function") { callback(); }
                 });
     });
 };
@@ -73,7 +73,7 @@ exports.write = function (location, data, callback) {
                 options,
                 function (err) {
                     if (err) { console.log(err); };
-                    callback(location);
+                    if (typeof callback === "function") { callback(location); }
                 });
     });
 };
@@ -86,7 +86,7 @@ exports.concat = function (files, callback) {
         exports.read(file, function (data) {
             result[index] = data;
             if (++i === files.length) {
-                callback(result.join("\n"));
+                if (typeof callback === "function") { callback(result.join("\n")); }
             }
         });
     });

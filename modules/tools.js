@@ -106,6 +106,17 @@ exports.dateToString = function (date) {
             exports.numberToDoubleDigit(date.getSeconds());
 };
 
+exports.lastBuild = function (root) {
+    var content = [
+        root,
+        global.tools.dateToString(new Date()),
+    ].join("\n");
+    
+    global.tools.file.write(root + "last-build.txt",
+            content,
+            function () {});
+};
+
 if (typeof module !== "undefined" &&
         typeof module.exports === "object") {
 
