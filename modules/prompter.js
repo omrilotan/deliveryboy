@@ -5,6 +5,14 @@ var prompt = require("../node_modules/prompt"),
 
     exports = {},
 
+    prompter = function () {
+        var args = arguments;
+        var fn = function () {
+            prompt.get.apply(prompt, args);
+        };
+        setTimeout(fn, 40);
+    },
+
     setSchema = function (name, properties) {
         var key;
         for (key in properties) {
@@ -80,7 +88,7 @@ actions.build = function (options) {
 
     var distributions = global.tools.listAttribute(global.config.distributions, "name");
     
-    prompt.get(schemas.prebuild, function (err, result) {
+    prompter(schemas.prebuild, function (err, result) {
         if (err) { console.log(err); return; }
 
         if (result.prebuild.toLowerCase() !== "y") {
@@ -89,7 +97,7 @@ actions.build = function (options) {
         }
 
         // Build distribution
-        prompt.get(schemas.build, function (err, result) {
+        prompter(schemas.build, function (err, result) {
             if (err) { console.log(err); return; }
 
             global.tools.actions.build(result, actions.serve);
@@ -101,14 +109,14 @@ actions.build = function (options) {
 // Run web server
 //////////////////
 actions.serve = function () {
-    prompt.get(schemas.preserve, function (err, result) {
+    prompter(schemas.preserve, function (err, result) {
         if (err) { console.log(err); return; }
         if (result.serve.toLowerCase() === "y") {
             
             console.log(["=========================================",
                  " Select port number and an available distribution:",
                  "========================================="].join("\n"));
-            prompt.get(schemas.serve, function (err, result) {
+            prompter(schemas.serve, function (err, result) {
                 if (err) { console.log(err); return; }
 
                 global.tools.serve.start(result);
