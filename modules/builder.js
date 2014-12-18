@@ -65,7 +65,9 @@ exports.build = function (distribution, callback) {
         total;
 
     // Get the requested distribution details
-    item = distribution;
+    console.log(item);
+    item = global.tools.publication(distribution);
+    console.log(item);
 
     // global.config.units
     units = item.units.filter(function (unit) {

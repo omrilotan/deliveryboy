@@ -7,6 +7,6 @@
         "node" : ">=0.10.X"
     },
     "dependencies": {
-        "less"      : "~1.7.4"
+        "less"      : "~1.7.5"
     }
 }

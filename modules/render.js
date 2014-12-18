@@ -23,6 +23,10 @@ exports.parse = function (data, vars, callback) {
         console.log("Missing extension " + data.type);
         return;
     }
+    if (!data.sources.length) {
+        console.log(data.destination + " has no sources");
+        return;
+    }
     extensions[data.type].call(null, {
         conf: data,
         vars: vars

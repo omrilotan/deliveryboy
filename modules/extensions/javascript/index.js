@@ -49,9 +49,7 @@ var UglifyJS = require("uglify-js"),
         var after = function () {
             global.tools.file.concat(data.conf.sources, function (result) {
                 var string = global.tools.stringReplacements(result.toString(),
-                        global.tools.objectCombine(data.vars,
-                                global.config.constants.preferences,
-                                global.config.constants.assets));
+                        data.vars);
 
                 if (data.vars.MINIFY === "true") {
                     callback(UglifyJS.minify(string, {
