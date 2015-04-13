@@ -1,16 +1,16 @@
 global.tools = require("./modules/tools");
 
-global.CONFIG_DIRECTORY = "config";
+var CONFIG_DIRECTORY = "config";
 
 global.config = {};    // Store configuration details from file later
 
 
 global.refresh = function (callback) {
     // Read configuration file
-    global.tools.file.readFilesInDir(global.CONFIG_DIRECTORY, function (data) {
+    global.tools.file.readFilesInDir(CONFIG_DIRECTORY, function (data) {
         if (!data.length) {
             console.log(["\t\t\t\t====================",
-                         "\t\t\t\t '" + global.CONFIG_DIRECTORY + "' is empty",
+                         "\t\t\t\t '" + CONFIG_DIRECTORY + "' is empty",
                          "\t\t\t\t===================="].join("\n"));
             return;
         } else {
