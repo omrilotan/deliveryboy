@@ -1,4 +1,5 @@
 var http = require("http"),
+    https = require("https"),
     url = require("url"),
     path = require("path"),
     fs = require("fs"),
@@ -24,7 +25,7 @@ var http = require("http"),
         fs.exists(filename, function (exists) {
             if (!exists) {
                 callback(null);
-                return null;
+                return;
             }
 
             if (fs.statSync(filename).isDirectory()) {
@@ -38,7 +39,6 @@ var http = require("http"),
                 }
                 callback(file);
             });
-            return null;
         });
 
     },
@@ -50,6 +50,74 @@ exports.config = function (callback) {
 };
 
 exports.start = function (result) {
+    var serverCallout = function serverCallout (request, response) {
+        var requestArray = global.tools.request.breakdown(request.url).request,
+            req = requestArray[requestArray.length - 1] || "index.html",
+            unit = find(global.config.units, "destinations", req),
+            vars = distribution.vars;
+
+        // If it's a build unit, build and serve
+        if (unit !== null &&
+
+                // And if this item is included in the build units list
+                distribution.units.indexOf(unit.name) !== -1) {
+            global.tools.builder.item(unit, vars, function (output) {
+                response.writeHead(200);
+                response.write(output);
+                response.end();
+            });
+            return;
+        }
+
+        // Search for a file in that name and uri
+        getFile("/" + serving, request.url, function (file) {
+            if (file === null) {
+
+                // File not found, Build unit not found
+                if (unit === null) {
+                    
+                    console.log(["Neither file nor build unit found: \"/",
+                                serving + request.url + "\"",
+                                "Redirecting to \"index.html\""
+                            ].join(""));
+
+                    request.url = "index.html";
+                    serverCallout(request, response)
+                    return;
+
+                    // console.log("Neither file nor build unit found: \"/" + serving + request.url + "\"");
+                    // response.writeHead(404, {
+                    //         "Content-Type": "text/plain",
+                    //         "Error-Description": "Not Found"
+                    // });
+                    // response.write("Not found: " + request.url);
+                    // response.end();
+                    // return;
+                }
+
+                // If 'unit' exists, build it
+                global.tools.builder.item(unit, vars, function (output) {
+                    if (output) {
+                        response.writeHead(200);
+                        response.write(output);
+                        response.end();
+                    } else {
+                        response.writeHead(502, {
+                                "Content-Type": "text/plain",
+                                "Error-Description": "Bad Gateway"
+                            });
+                        response.write("Build unsuccessful: " + request.url);
+                        response.end();
+                    }
+                });
+            } else {
+                response.writeHead(200);
+                response.write(file, "binary");
+                response.end();
+            }
+        });
+    };
+
     result = result || {};
 
     if (global.config.distributions.length < result.distribution) {
@@ -64,54 +132,25 @@ exports.start = function (result) {
         root = !!distribution.vars.ROOT ? distribution.vars.ROOT : "",
         serving = global.config.build.OUTPUT_DIRECTORY + "/" + root;
 
-    http.createServer(function (request, response) {
-        var requestArray = global.tools.request.breakdown(request.url).request,
-            req = requestArray[requestArray.length - 1] || "index.html",
-            unit = find(global.config.units, "destinations", req),
-            vars = distribution.vars,
-            binary;
-
-        // If it's a build unit, build and serve
-        if (unit !== null &&
-
-                // And if this item is included in the build units list
-                distribution.units.indexOf(unit.name) !== -1) {
-            global.tools.builder.item(unit, vars, function (output) {
-                response.write(output);
-                response.end();
-            });
-            return;
-        }
-
-        // Search for a file in that name and uri
-        binary = getFile("/" + serving, request.url, function (file) {
-            if (file === null) {
-
-                if (unit === null) {
-                    console.log("File Not Found: \"" + req + "\"");
-                    response.writeHead(404, {"Content-Type": "text/plain"});
-                    response.write("File or build not found: " + request.url);
-                    response.end();
-                    return;
-                }
-                global.tools.builder.item(unit, vars, function (output) {
-                    if (output) {
-                        response.write(output);
-                        response.end();
-                    } else {
-                        response.writeHead(404, {"Content-Type": "text/plain"});
-                        response.write("Build not found: " + request.url);
-                        response.end();
-                    }
-                });
-            } else {
-                response.writeHead(200);
-                response.write(file, "binary");
-                response.end();
+    if (global.config.build.SSL) {
+        fs.readFile(global.config.build.CERTIFICATE,
+                "binary",
+                function (error, file) {
+            if (error) {
+                console.log(error);
+                return;
             }
+            https.createServer({
+                pfx: file,
+                passphrase: global.config.build.PASSPHRASE
+            }, serverCallout).listen(port);
         });
+    } else {
+        http.createServer(serverCallout).listen(port);
+    }
 
-    }).listen(port);
+
+
     console.log("Listening on port " + port + ", Serving directory " + distribution.name);
     console.log([
         "██████████████████████████████████████████████████████",

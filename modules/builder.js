@@ -46,10 +46,6 @@ exports.item = function (unit, vars, callback) {
 };
 
 exports.build = function (distribution, callback) {
-    console.log(["================",
-                 " Start building: " + distribution.name,
-                 "================"].join("\n"));
-
     var item,
         batch = [],
         callBatch = function (callback) {
@@ -65,9 +61,11 @@ exports.build = function (distribution, callback) {
         total;
 
     // Get the requested distribution details
-    console.log(item);
     item = global.tools.publication(distribution);
-    console.log(item);
+    
+    console.log(["================",
+                 " Start building: " + item.name,
+                 "================"].join("\n"));
 
     // global.config.units
     units = item.units.filter(function (unit) {

@@ -83,7 +83,7 @@ exports.config = function (callback) {
 ///////////////////////
 // Build distribution
 ///////////////////////
-actions.build = function (options) {
+actions.build = function prompter$build (options) {
     options = options || {};
 
     var distributions = global.tools.listAttribute(global.config.distributions, "name");

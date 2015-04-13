@@ -33,6 +33,11 @@ var exports = (function () {
         go: function () {
             var i = 0,
                 len = collection.length;
+            if (typeof report === "function") {
+                report("Booting configurations:");
+                report("-----------------------");
+                report("(0/" + collection.length + ")==> 0% ready");
+            }
             for (; i < len; i++) {
                 collection[i](step);
             }

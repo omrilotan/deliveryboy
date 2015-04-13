@@ -4,7 +4,7 @@
         "vars": {
             "MINIFY": "flase",
             "ROOT": "v1",
-            "CULTURE": "he-IL"
+            "CULTURE": "en-GB"
         },
         "units": [
             "index.html",

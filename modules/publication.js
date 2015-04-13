@@ -1,6 +1,12 @@
 // publication
-exports = function (result) {
-    var distribution = global.config.distributions[result.distribution] || global.config.distributions[0];
+exports = function (index) {
+    var distribution;
+    if (global.config.distributions.hasOwnProperty(index)) {
+        distribution = global.config.distributions[index];
+    } else {
+        distribution = global.config.distributions[0];
+        console.log("Distribution " + index + " was not found. Building " + distribution.name);
+    }
     distribution.vars.PROCESS = process.cwd() + "/" + global.config.build.SOURCES_DIRECTORY + "/";
 
     distribution.vars = (function (vars) {

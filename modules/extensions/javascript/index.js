@@ -12,7 +12,12 @@ var UglifyJS = require("uglify-js"),
                 response.push("Errors in file " + source);
                 response.push("===============");
                 jshint.data().errors.forEach(function (error) {
-                    response.push(error.line + ":" + error.character + " -> " + error.reason + " -> " + error.evidence);
+                    if (error) {
+                        response.push(error.line + ":" + error.character + " -> " + error.reason + " -> " + error.evidence);
+                    } else {
+                        response.push("Unknown Error:");
+                        response.push(error);
+                    }
                 });
                 response.push("===============");
             }
@@ -52,11 +57,15 @@ var UglifyJS = require("uglify-js"),
                         data.vars);
 
                 if (data.vars.MINIFY === "true") {
-                    callback(UglifyJS.minify(string, {
-                                fromString: true,
-                                drop_debugger: true,
-                                warnings: false
-                            }).code);
+                    try {
+                        callback(UglifyJS.minify(string, {
+                                    fromString: true,
+                                    drop_debugger: true,
+                                    warnings: false
+                                }).code);
+                    } catch (err) {
+                        console.log(err);
+                    }
                 } else {
                     callback(string);
                 }

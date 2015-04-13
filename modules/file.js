@@ -12,14 +12,14 @@ exports.read = function (location, callback) {
     fs.readFile(location,
             options,
             function (err, data) {
-                if (err) { console.log(err); };
+                if (err) { console.log(err); return; };
                 callback(data);
             });
 };
 
 exports.readDir = function (location, callback) {
     fs.readdir(location, function (err, files) {
-        if (err) { console.log(err); };
+        if (err) { console.log(err); return };
         callback(files.filter(function (file) {
             
             // Ignore "hidden" files
@@ -50,7 +50,7 @@ exports.readFilesInDir = function (location, callback) {
 
 exports.makeDir = function (location, callback) {
     mkdirp(location, function (err) {
-        if (err) { console.log(err); };
+        if (err) { console.log(err); return };
         if (typeof callback === "function") { callback(); }
     });
 };
@@ -60,7 +60,7 @@ exports.copyDir = function (from, to, callback) {
         ncp(from,
                 to,
                 function (err) {
-                    if (err) { console.error(err); }
+                    if (err) { console.error(err); return }
                     if (typeof callback === "function") { callback(); }
                 });
     });
@@ -72,7 +72,7 @@ exports.write = function (location, data, callback) {
                 data,
                 options,
                 function (err) {
-                    if (err) { console.log(err); };
+                    if (err) { console.log(err); return };
                     if (typeof callback === "function") { callback(location); }
                 });
     });

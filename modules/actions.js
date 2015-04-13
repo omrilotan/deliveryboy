@@ -1,6 +1,6 @@
 var exports = {};
 
-exports.build = function (input, callback) {
+exports.build = function (input, callback, fail) {
     // Callback for building all distributions
     
     var i = 0,
@@ -17,8 +17,8 @@ exports.build = function (input, callback) {
             callback();
             break;
         case "*":
-            global.config.distributions.forEach(function (distribution) {
-                global.tools.builder.build(distribution, callbackForAll);
+            global.config.distributions.forEach(function (distribution, index) {
+                global.tools.builder.build(index, callbackForAll);
             });
             break;
         default:
@@ -30,7 +30,7 @@ exports.build = function (input, callback) {
                 return;
             }
 
-            global.tools.builder.build(global.config.distributions[input.build], callback);
+            global.tools.builder.build(input.build, callback);
             break;
     }
 };
