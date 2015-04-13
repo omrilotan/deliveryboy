@@ -3,5 +3,7 @@
     "SOURCES_DIRECTORY": "src",
     "DEFAULT_PORT": 80,
     "DEFAULT_FILE": "index.html",
-    "SSL": false
+    "SSL": false,
+    "CERTIFICATE": "ssl/test.pfx",
+    "PASSPHRASE": "0",
 }
