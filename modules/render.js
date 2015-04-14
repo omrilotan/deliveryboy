@@ -1,32 +1,35 @@
 var extensions = {},
-
     exports = {};
 
+// Get all extensions rendering files
 exports.config = function (callback) {
-    var ready = false;
     global.tools.file.readDir("modules/extensions", function (result) {
         var i = 0,
             len = result.length;
-        if (len === 0) {
-            callback();
-            return;
-        }
         result.forEach(function (item) {
             extensions[item] = require("./extensions/" + item);
         });
         callback();
+        return;
     });
 };
 
+// Parse a unit by it's type (using respective extension)
 exports.parse = function (data, vars, callback) {
+
+    // Missing engine
     if (typeof extensions[data.type] !== "function") {
-        console.log("Missing extension " + data.type);
+        exports.logTitle("Missing extension " + data.type);
         return;
     }
+
+    // No sources
     if (!data.sources.length) {
-        console.log(data.destination + " has no sources");
+        cexports.logTitle(data.destination + " has no sources");
         return;
     }
+
+    // Cool!
     extensions[data.type].call(null, {
         conf: data,
         vars: vars

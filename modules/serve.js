@@ -32,8 +32,9 @@ var http = require("http"),
                 filename += "/index.html";
             }
 
-            fs.readFile(filename, "binary", function (error, file) {
-                if (error) {
+            fs.readFile(filename, "binary", function (err, file) {
+                if (err) {
+                    console.error(err);
                     callback(null);
                     return;
                 }
@@ -50,6 +51,7 @@ exports.config = function (callback) {
 };
 
 exports.start = function (result) {
+
     var serverCallout = function serverCallout (request, response) {
         var requestArray = global.tools.request.breakdown(request.url).request,
             req = requestArray[requestArray.length - 1] || "index.html",
@@ -76,7 +78,7 @@ exports.start = function (result) {
                 // File not found, Build unit not found
                 if (unit === null) {
                     
-                    console.log(["Neither file nor build unit found: \"/",
+                    global.tools.logTitle(["Neither file nor build unit found: \"/",
                                 serving + request.url + "\"",
                                 "Redirecting to \"index.html\""
                             ].join(""));
@@ -84,15 +86,6 @@ exports.start = function (result) {
                     request.url = "index.html";
                     serverCallout(request, response)
                     return;
-
-                    // console.log("Neither file nor build unit found: \"/" + serving + request.url + "\"");
-                    // response.writeHead(404, {
-                    //         "Content-Type": "text/plain",
-                    //         "Error-Description": "Not Found"
-                    // });
-                    // response.write("Not found: " + request.url);
-                    // response.end();
-                    // return;
                 }
 
                 // If 'unit' exists, build it
@@ -118,16 +111,14 @@ exports.start = function (result) {
         });
     };
 
-    result = result || {};
-
-    if (global.config.distributions.length < result.distribution) {
+    if (!global.config.distributions.hasOwnProperty(result.name)) {
         console.log(["\t\t\t\t=========================================",
-                "\t\t\t\t Distribution '" + result.distribution + "' not found",
+                "\t\t\t\t Distribution '" + result.name + "' not found",
             "\t\t\t\t========================================="].join("\n"));
         return;
     }
 
-    var distribution = global.tools.publication(result),
+    var distribution = global.tools.publication(result.name),
         port = result.port,
         root = !!distribution.vars.ROOT ? distribution.vars.ROOT : "",
         serving = global.config.build.OUTPUT_DIRECTORY + "/" + root;
@@ -135,11 +126,8 @@ exports.start = function (result) {
     if (global.config.build.SSL) {
         fs.readFile(global.config.build.CERTIFICATE,
                 "binary",
-                function (error, file) {
-            if (error) {
-                console.log(error);
-                return;
-            }
+                function (err, file) {
+            if (err) { console.error(err); return; }
             https.createServer({
                 pfx: file,
                 passphrase: global.config.build.PASSPHRASE
@@ -151,7 +139,7 @@ exports.start = function (result) {
 
 
 
-    console.log("Listening on port " + port + ", Serving directory " + distribution.name);
+    global.tools.logTitle("Listening on port " + port + ", Serving directory " + distribution.name);
     console.log([
         "██████████████████████████████████████████████████████",
         "████████████████       ██       ██████████████████████",

@@ -1,0 +1,13 @@
+{
+    "name": "main",
+    "vars": {
+        "MINIFY": "flase",
+        "ROOT": "v1",
+        "CULTURE": "en-GB"
+    },
+    "units": [
+        "index.html",
+        "styles.css",
+        "files"
+    ]
+}

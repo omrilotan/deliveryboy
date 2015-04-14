@@ -1,7 +1,9 @@
 var prompt = require("../node_modules/prompt"),
+    manager = require("./prompter.manager.js"),
 
     schemas = {},
     actions = {},
+    collection = [],
 
     exports = {},
 
@@ -11,71 +13,10 @@ var prompt = require("../node_modules/prompt"),
             prompt.get.apply(prompt, args);
         };
         setTimeout(fn, 40);
-    },
-
-    setSchema = function (name, properties) {
-        var key;
-        for (key in properties) {
-            if (properties.hasOwnProperty(key)) {
-                schemas[name] = schemas[name] || { properties: {} };
-                schemas[name].properties = schemas[name].properties || {};
-                schemas[name].properties[key] = global.tools.objectCombine(schemas[name].properties[key], properties[key]);
-            }
-        }
     };
 
 exports.config = function (callback) {
-    setSchema("prebuild", {
-        prebuild: {
-            description: "Build assets [Y/N]?",
-            default: "Y",
-            pattern: /[y|Y|n|N]/,
-            type: "string",
-            message: "Please answer by Y or N",
-            required: true
-        }
-    });
-
-    setSchema("build", {
-        build: {
-            description: "Error: Description was not configured",
-            default: "0",
-            pattern: /^[0-9a-zA-Z\s\-\*]+$/,
-            type: "string",
-            message: "Answer must be only numbers, letters, spaces, or dashes",
-            required: true
-        }
-    });
-
-    setSchema("preserve", {
-        serve: {
-            description: "Run web server [Y/N]?",
-            default: "Y",
-            pattern: /[y|Y|n|N]/,
-            type: "string",
-            message: "Please answer by Y or N",
-            required: true
-        }
-    });
-
-    setSchema("serve", {
-        port: {
-            description: "Enter a port number",
-            default: global.config.build.DEFAULT_PORT,
-            pattern: /^[\s]+$/,
-            type: "number",
-            message: "Please enter a number",
-            required: false
-        },
-        distribution: {
-            description: "Error: Description was not configured",
-            default: "0",
-            pattern: /^[0-9a-zA-Z\s\-\*]+$/,
-            type: "string",
-            message: "Answer must be only numbers, letters, spaces, or dashes",
-            required: false
-        }
-    });
+    schemas = manager.get();
 
     callback();
 };
@@ -83,26 +24,67 @@ exports.config = function (callback) {
 ///////////////////////
 // Build distribution
 ///////////////////////
-actions.build = function prompter$build (options) {
-    options = options || {};
+actions.build = function prompter$build (callback) {
+    var prebuild = function (callback, exitStrategy) {
+            prompter(schemas.prebuild, function (err, result) {
+                if (err) { console.error(err); return; }
+                if (result.question.toLowerCase() !== "y") {
+                    exitStrategy();
+                    return;
+                }
+                callback();
+            });
+        },
+        build = function (callback) {
+            prompter(schemas.build, function (err, result) {
+                if (err) { console.error(err); return; }
+                var answer = collection[result.question || 0],
+                    key,
+                    i = 0,
+                    len = 0,
+                    callbackForAll = function () {
+                        ++i;
+                        if (i === len) {
+                            callback();
+                        }
+                    };
 
-    var distributions = global.tools.listAttribute(global.config.distributions, "name");
-    
-    prompter(schemas.prebuild, function (err, result) {
-        if (err) { console.log(err); return; }
+                switch (answer) {
+                    case "cancel":
+                        callback();
+                        break;
+                    case "*":    // Building all distributions
+                        for (key in global.config.distributions) {
+                            if (global.config.distributions.hasOwnProperty(key)) {
+                                len++;
+                                global.tools.builder.build(key, callbackForAll);
+                            }
+                        }
+                        break;
+                    default:
+                        if ((global.config.distributions.length - 1) < answer) {
+                            global.tools.logTitle("Distribution " + answer + " not found");
+                            callback();
+                            return;
+                        }
+                        global.tools.builder.build(answer, callback);
+                        break;
+                }
+            });
+        },
+        finalCallback = callback;
 
-        if (result.prebuild.toLowerCase() !== "y") {
-            actions.serve();
-            return;
-        }
+    global.tools.first("build-prompts")
+            .then(function (callback) {
+                prebuild(callback, actions.serve);
+            })
+            .then(function (callback) {
+                build(callback);
+            })
+            .then(finalCallback)
+            .go();
 
-        // Build distribution
-        prompter(schemas.build, function (err, result) {
-            if (err) { console.log(err); return; }
 
-            global.tools.actions.build(result, actions.serve);
-        });
-    });
 };
 
 //////////////////
@@ -110,16 +92,22 @@ actions.build = function prompter$build (options) {
 //////////////////
 actions.serve = function () {
     prompter(schemas.preserve, function (err, result) {
-        if (err) { console.log(err); return; }
-        if (result.serve.toLowerCase() === "y") {
+        if (err) { console.error(err); return; }
+        if (result.question.toLowerCase() === "y") {
             
             console.log(["=========================================",
                  " Select port number and an available distribution:",
                  "========================================="].join("\n"));
-            prompter(schemas.serve, function (err, result) {
-                if (err) { console.log(err); return; }
-
-                global.tools.serve.start(result);
+            prompter(schemas.port, function (err, result) {
+                if (err) { console.error(err); return; }
+                var port = result.question;
+                
+                prompter(schemas.serve, function (err, result) {
+                    global.tools.serve.start({
+                        port: port,
+                        name: collection[result.question || 0]
+                    });
+                });
             });
         }
     });
@@ -128,26 +116,31 @@ actions.serve = function () {
 exports.start = function () {
 
     // Get distributions list
-    var distributions = global.tools.listAttribute(global.config.distributions, "name");
+    var key,
+        i = 0,
+        menu = [];
+    for (key in global.config.distributions) {
+        if (global.config.distributions.hasOwnProperty(key)) {
+            collection.push(key);
+            menu.push("(" + i + ") " + key);
+        }
+    }
 
     // Set up build distributions prompt
-    setSchema("serve", {
-        distribution: {
-            description: global.tools.listNumber(distributions).join(", ")
-        }
+    manager.set(schemas, "serve", {
+        description: menu.join(", ")
     })
-    setSchema("build", {
-        build: {
-            description: global.tools.listNumber(distributions).join(", ") +
+    manager.set(schemas, "build", {
+        description: menu.join(", ") +
                     ", 'cancel' or '*' (all)"
-        }
     });
 
     prompt.start();
-    actions.build({
-        distributions: distributions,
-        default: distributions[0]
-    });
+
+    global.tools.first("prompts")
+            .then(actions.build)
+            .then(actions.serve)
+            .go();
 };
 
 

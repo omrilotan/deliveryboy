@@ -1,0 +1,14 @@
+{
+    "name": "styles.css",
+    "type": "less",
+    "destinations": ["styles.css"],
+    "sources": [
+        "css/vars.less.css",
+        "culture/<%ASSET%>CULTURE</%ASSET%>.css",
+        "css/fonts.css",
+        "css/functions.less.css",
+        "css/animations.less.css",
+        "css/reset.less.css",
+        "css/styles.css"
+    ]
+}

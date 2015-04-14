@@ -6,17 +6,17 @@ var UglifyJS = require("uglify-js"),
         global.tools.file.read(source, function (result) {
             var pass = jshint(result);
             if (pass) {
-                // console.log("No errors in file " + source);
+                // global.tools.logTitle("No errors in file " + source);
             } else {
                 response.push("===============");
                 response.push("Errors in file " + source);
                 response.push("===============");
-                jshint.data().errors.forEach(function (error) {
-                    if (error) {
-                        response.push(error.line + ":" + error.character + " -> " + error.reason + " -> " + error.evidence);
+                jshint.data().errors.forEach(function (err) {
+                    if (err) {
+                        response.push(err.line + ":" + err.character + " -> " + err.reason + " -> " + err.evidence);
                     } else {
                         response.push("Unknown Error:");
-                        response.push(error);
+                        response.push(err);
                     }
                 });
                 response.push("===============");

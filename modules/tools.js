@@ -12,38 +12,36 @@ exports.request     = require("./request");
 exports.ready       = require("./ready");
 exports.first       = require("./first");
 
-exports.stringClean = function (string) {
-    return string.replace((new RegExp(global.config.constants.tags.OPEN)), "")
-            .replace((new RegExp(global.config.constants.tags.CLOSE)), "");
-};
+////////////////////////////////
+// Miscellaneous useful tools //
+////////////////////////////////
 
+// remove line breaks and double spaces
 exports.stringCram = function (string) {
     return string.replace(/\n|\r/gmi, "").replace(/\s{2,}/gmi, " ");
 };
 
+// Replace representations of global constants
 exports.stringReplacements = function (string, data) {
     if (typeof data !== "object") {
         throw Error("Second argument must be an object");
     }
-
     if ((new RegExp(global.config.constants.tags.OPEN +
                     ".*" +
                     global.config.constants.tags.CLOSE,
                 "gmi")).test(string)) {
         
-        // Loop through an array of matches
-
+        // Iterate through an array of matches
         string.match(new RegExp(global.config.constants.tags.OPEN +
                     ".*?" +
                     global.config.constants.tags.CLOSE,
                 "gmi")).forEach(function (item) {
-                    var cleanString = exports.stringClean(item);
-
-                    if (data.hasOwnProperty(cleanString)) {
-                        string = string.replace(item, data[cleanString]);
-                    } else if (cleanString !== "") {
+                    var clean = exports.stringClean(item);
+                    if (data.hasOwnProperty(clean)) {
+                        string = string.replace(item, data[clean]);
+                    } else if (clean !== "") {
                         console.log(["\t\t\t\t======================",
-                                     "\t\t\t\t Missing variable:" + cleanString,
+                                     "\t\t\t\t Missing variable:" + clean,
                                      "\t\t\t\t======================"].join("\n"));
                     } else {
                         console.log(["\t\t\t\t======================",
@@ -53,6 +51,12 @@ exports.stringReplacements = function (string, data) {
                 });
     }
     return string;
+};
+
+// Remove representations of global constants
+exports.stringClean = function (string) {
+    return string.replace((new RegExp(global.config.constants.tags.OPEN)), "")
+            .replace((new RegExp(global.config.constants.tags.CLOSE)), "");
 };
 
 exports.numberToDoubleDigit = function (num) {
@@ -92,29 +96,65 @@ exports.objectCombine = function () {
     return combined;
 };
 
-exports.dateToString = function (date) {
-    return date.getFullYear() +
-            "/" +
-            exports.numberToDoubleDigit(date.getMonth() + 1) +
-            "/" +
-            exports.numberToDoubleDigit(date.getDate()) +
-            " " +
-            exports.numberToDoubleDigit(date.getHours()) +
-            ":" +
-            exports.numberToDoubleDigit(date.getMinutes()) +
-            ":" +
-            exports.numberToDoubleDigit(date.getSeconds());
+exports.collectionFilter = function (collection, fn) {
+    var key;
+    for (key in collection) {
+        if (collection.hasOwnProperty(key)) {
+            if (!fn(collection[key])) {
+                delete collection[key];
+            }
+        }
+    }
+    return collection;
 };
 
+exports.forIn = function (object, fn) {
+    var key;
+    for (key in object) {
+        if (object.hasOwnProperty(key)) {
+            fn.call(object[key], object[key], object);
+        }
+    }
+    return object;
+};
+
+exports.logTitle = function (string) {
+    var character = "=",
+        line = (new Array(string.length + 5)).join(character);
+    console.log([
+            line,
+            line,
+            character + " " + string + " " + character,
+            line,
+            line
+        ].join("\n"));
+};
+
+// create a last-build text file
 exports.lastBuild = function (root) {
-    var content = [
-        root,
-        global.tools.dateToString(new Date()),
-    ].join("\n");
+    var now = (function (date) {
+
+        // Formats a date to a "yyyy/MM/dd hh:mm:ss" string
+        return date.getFullYear() +
+                "/" +
+                exports.numberToDoubleDigit(date.getMonth() + 1) +
+                "/" +
+                exports.numberToDoubleDigit(date.getDate()) +
+                " " +
+                exports.numberToDoubleDigit(date.getHours()) +
+                ":" +
+                exports.numberToDoubleDigit(date.getMinutes()) +
+                ":" +
+                exports.numberToDoubleDigit(date.getSeconds());
+        }(new Date())),
+        content = [
+            "Last Build Date and Time",
+            root,
+            now
+        ].join("\n");
     
     global.tools.file.write(root + "last-build.txt",
-            content,
-            function () {});
+            content);
 };
 
 if (typeof module !== "undefined" &&

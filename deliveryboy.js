@@ -6,25 +6,14 @@ global.config = {};    // Store configuration details from file later
 
 
 global.refresh = function (callback) {
-    // Read configuration file
-    global.tools.file.readFilesInDir(CONFIG_DIRECTORY, function (data) {
-        if (!data.length) {
-            console.log(["\t\t\t\t====================",
-                         "\t\t\t\t '" + CONFIG_DIRECTORY + "' is empty",
-                         "\t\t\t\t===================="].join("\n"));
-            return;
-        } else {
-            data.forEach(function (item) {
-                var name = item.name.split(".")[0],
-                    content = JSON.parse(item.content);
-                global.config[name] = content;
-            });
-        }
+
+    // add all configuration files from directory to 'global.config'
+    global.tools.file.objectifyDir(CONFIG_DIRECTORY, function (data) {
+        global.config = global.tools.objectCombine(global.config, data);
         if (typeof callback === "function") {
             callback();
         }
     });
-
     return;
 };
 

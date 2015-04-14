@@ -1,44 +1,24 @@
-var find = function (array, key) {
-        var i = 0,
-            len = array.length;
-        for (; i < len; i++) {
-            if (array[i].name === key) {
-                return array[i];
-            }
-        }
-        return null;
-    },
-    logFile = function (message) {
-        console.log(["========",
-                     "written: " + message,
-                     "========"].join("\n"));
-    },
-
-    exports = {};
+var exports = {};
 
 exports.config = function (callback) {
-    callback();
+    callback();    // No configuration required
 };
 
 exports.item = function (unit, vars, callback) {
-    var sources = [];
     
-    unit.sources.forEach(function (source) {
-
-        // Remove commented out items, marked with Number sign (#) as first character
-        if (source.indexOf("#") === 0) {
-            // console.log("Skipped commented out file \"" + source + "\"");
-            return;
-        }
-
-        sources.push(global.config.build.SOURCES_DIRECTORY +
+    // Remove commented out items, marked with hash sign (#) as first character
+    unit.sources = unit.sources.filter(function (source) {
+        return source.indexOf("#") !== 0;
+    });
+    unit.sources.forEach(function (source, index, array) {
+        array[index] = global.config.build.SOURCES_DIRECTORY +
                 "/" +
-                global.tools.stringReplacements(source, vars));
+                global.tools.stringReplacements(source, vars);
     });
 
     global.tools.render.parse({
                     type: unit.type,
-                    sources: sources,
+                    sources: unit.sources,
                     destination: unit.destinations[0]
                 },
                 vars,
@@ -61,68 +41,71 @@ exports.build = function (distribution, callback) {
         total;
 
     // Get the requested distribution details
+
     item = global.tools.publication(distribution);
     
-    console.log(["================",
-                 " Start building: " + item.name,
-                 "================"].join("\n"));
-
-    // global.config.units
-    units = item.units.filter(function (unit) {
-        var specification = find(global.config.units, unit);
-        if (specification === null) {
-
-            // specification.destinations[0]
-            console.log("Unit " +
-                unit +
-                " missing specification");
-            return false;
-        }
-        // Report no source files to the console
-        if (specification.sources.length === 0) {
-            console.log("Unit " +
-                specification.destinations[0] +
-                " has no assigned source files");
-        }
-        return !!specification.sources.length;
-    });
+    console.log([
+        "",
+        "                         __o",
+        "                        -\\<,",
+        "    Start building:     O/ O       \"" + item.name + "\"",
+        "`````````````````````````````````````````````````````",
+        ""
+        ].join("\n"));
 
     // Count only the units with any sources
-    total = units.length;
+    total = item.units.length;
 
-    units.forEach(function (unit) {
-        var u = find(global.config.units, unit),
-            root =  global.config.build.OUTPUT_DIRECTORY +
-                            "/" +
-                            item.vars.ROOT +
-                            "/";
-
-        if (u === null) {
-            console.log(unit + " not specified in units list");
-            callback("");
+    item.units.forEach(function (name) {
+        var root,
+            unit;
+        if (!global.config.units.hasOwnProperty(name)) {
+            global.tools.logTitle(name + " unit is not configured");
             return;
         }
+        root = [
+            global.config.build.OUTPUT_DIRECTORY,
+            item.vars.ROOT,
+            ""
+        ].join("/");
+        unit = global.config.units[name];
 
         global.tools.lastBuild(root);
 
-        exports.item(u,
-            item.vars,
-            function (output) {
+        exports.item(unit,
+                item.vars,
+                function (output) {
                 batch.push(function (callback) {
-                    var destination = root + u.destinations[0];
+                    var destination = root + unit.destinations[0];
                     if (typeof output === "string") {
                         global.tools.file.write(destination,
                                 output,
                                 function (location) {
                                     ++finished;
-                                    logFile(item.vars.ROOT + ", " + finished + "/" + total + " ~> " + location);
+                                    console.log("written: " +
+                                            item.vars.ROOT +
+                                            ", " +
+                                            finished +
+                                            "/" +
+                                            total +
+                                            " ~> " +
+                                            location);
+
                                     if (finished === total) {
                                         callback();
                                     }
                         });
                     } else {
                         ++finished;
-                        logFile(item.vars.ROOT + ", " + finished + "/" + total + " -> " + destination);
+                        console.log("written: " +
+                                item.vars.ROOT +
+                                ", " +
+                                finished +
+                                "/" +
+                                total +
+                                " -> " +
+                                destination);
+
                         if (finished === total) {
                             callback();
                         }
@@ -131,11 +114,64 @@ exports.build = function (distribution, callback) {
 
                 // After all batches were assigned, call on them
                 ++i;
-                if (i === units.length) {
+                if (i === item.units.length) {
                     callBatch(callback);
                 }
             });
+
+
     });
+
+    // return;
+
+
+
+    // units.forEach(function (unit) {
+    //     var u = find(global.config.units, unit),
+    //         root =  global.config.build.OUTPUT_DIRECTORY +
+    //                         "/" +
+    //                         item.vars.ROOT +
+    //                         "/";
+
+    //     if (u === null) {
+    //         global.tools.logTitle(unit + " not specified in units list");
+    //         callback("");
+    //         return;
+    //     }
+
+    //     global.tools.lastBuild(root);
+
+    //     exports.item(u,
+    //         item.vars,
+    //         function (output) {
+    //             batch.push(function (callback) {
+    //                 var destination = root + u.destinations[0];
+    //                 if (typeof output === "string") {
+    //                     global.tools.file.write(destination,
+    //                             output,
+    //                             function (location) {
+    //                                 ++finished;
+    //                                 logFile(item.vars.ROOT + ", " + finished + "/" + total + " ~> " + location);
+    //                                 if (finished === total) {
+    //                                     callback();
+    //                                 }
+    //                     });
+    //                 } else {
+    //                     ++finished;
+    //                     logFile(item.vars.ROOT + ", " + finished + "/" + total + " -> " + destination);
+    //                     if (finished === total) {
+    //                         callback();
+    //                     }
+    //                 }
+    //             });
+
+    //             // After all batches were assigned, call on them
+    //             ++i;
+    //             if (i === units.length) {
+    //                 callBatch(callback);
+    //             }
+    //         });
+    // });
 };
 
 

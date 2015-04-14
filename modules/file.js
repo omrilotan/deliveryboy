@@ -12,14 +12,14 @@ exports.read = function (location, callback) {
     fs.readFile(location,
             options,
             function (err, data) {
-                if (err) { console.log(err); return; };
+                if (err) { console.error(err); return; };
                 callback(data);
             });
 };
 
 exports.readDir = function (location, callback) {
     fs.readdir(location, function (err, files) {
-        if (err) { console.log(err); return };
+        if (err) { console.error(err); return };
         callback(files.filter(function (file) {
             
             // Ignore "hidden" files
@@ -48,9 +48,60 @@ exports.readFilesInDir = function (location, callback) {
     });
 };
 
+exports.notHidden = function (file) {
+    return file.indexOf(".") !== 0;
+};
+
+// Convert a directory tree to an object
+exports.objectifyDir = function (location, callback) {
+    var obj = {};
+    exports.readDir(location, function (files) {
+        var i = 0,
+            len,
+            check = function () {
+                if (i === len) {
+                    callback(obj);
+                }
+            };
+        files = files.filter(exports.notHidden);
+        len = files.length;
+
+        if (len === 0) { callback({}); }    // Empty directories
+        files.forEach(function (file, index) {
+            details = path.resolve(location, file);
+            fs.stat(details, function(err, stat) {
+                var path = location + "/" + file,
+                    name = file.indexOf(".") > -1 ? file.substring(0, file.lastIndexOf(".")) : file;
+
+                // Directory
+                if (stat && stat.isDirectory()) {
+                    exports.objectifyDir(path, function (result) {
+                        obj[name] = result;
+                        ++i;
+                        check();
+                    });
+
+                // File (should be JSON)
+                } else {
+                    exports.read(path, function (content) {
+                        try {
+                            obj[name] = JSON.parse(content);
+                        } catch (err) {
+                            global.tools.logTitle("ERROR IN \"" + file + "\":");
+                            throw err;
+                        }
+                        ++i;
+                        check();
+                    });
+                }
+            });
+        });
+    });
+};
+
 exports.makeDir = function (location, callback) {
     mkdirp(location, function (err) {
-        if (err) { console.log(err); return };
+        if (err) { console.error(err); return };
         if (typeof callback === "function") { callback(); }
     });
 };
@@ -72,7 +123,7 @@ exports.write = function (location, data, callback) {
                 data,
                 options,
                 function (err) {
-                    if (err) { console.log(err); return };
+                    if (err) { console.error(err); return };
                     if (typeof callback === "function") { callback(location); }
                 });
     });
