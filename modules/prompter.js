@@ -101,8 +101,8 @@ actions.serve = function () {
             prompter(schemas.port, function (err, result) {
                 if (err) { console.error(err); return; }
                 var port = result.question;
-                
                 prompter(schemas.serve, function (err, result) {
+                    if (err) { console.error(err); return; }
                     global.tools.serve.start({
                         port: port,
                         name: collection[result.question || 0]

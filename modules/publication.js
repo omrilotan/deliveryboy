@@ -1,7 +1,7 @@
 // publication
 exports = function (name) {
     var distribution;
-    
+
     if (global.config.distributions.hasOwnProperty(name)) {
         distribution = global.config.distributions[name];
     } else {
@@ -12,8 +12,6 @@ exports = function (name) {
 
     distribution.vars = (function (vars) {
         vars.ROOT = vars.ROOT || "";
-
-        console.log(global.config.constants.hasOwnProperty("assets"));
         if (global.config.constants.hasOwnProperty("assets")) {
             vars = global.tools.objectCombine(vars,
                     global.config.constants.assets);

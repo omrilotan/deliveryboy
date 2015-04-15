@@ -2,7 +2,6 @@ var exports = {};
 
 exports.builder     = require("./builder");
 exports.prompter    = require("./prompter");
-exports.actions     = require("./actions");
 exports.serve       = require("./serve");
 exports.publication = require("./publication");
 exports.file        = require("./file");

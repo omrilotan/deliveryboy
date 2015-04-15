@@ -28,7 +28,6 @@ var init = function () {
             .register(global.tools.builder.config)
             .register(global.tools.prompter.config)
             .register(global.tools.serve.config)
-
             .go();
 };
 

@@ -15,7 +15,6 @@ exports.item = function (unit, vars, callback) {
                 "/" +
                 global.tools.stringReplacements(source, vars);
     });
-
     global.tools.render.parse({
                     type: unit.type,
                     sources: unit.sources,
@@ -26,7 +25,9 @@ exports.item = function (unit, vars, callback) {
 };
 
 exports.build = function (distribution, callback) {
-    var item,
+
+    // Get the requested distribution details
+    var item = global.tools.publication(distribution),
         batch = [],
         callBatch = function (callback) {
             // Write all files
@@ -35,14 +36,9 @@ exports.build = function (distribution, callback) {
             }
         },
         units,
-        i = 0,
-
+        counter = 0,
         finished = 0,
-        total;
-
-    // Get the requested distribution details
-
-    item = global.tools.publication(distribution);
+        total = item.units.length;    // Count only the units with any sources
     
     console.log([
         "",
@@ -52,9 +48,6 @@ exports.build = function (distribution, callback) {
         "`````````````````````````````````````````````````````",
         ""
         ].join("\n"));
-
-    // Count only the units with any sources
-    total = item.units.length;
 
     item.units.forEach(function (name) {
         var root,
@@ -76,102 +69,44 @@ exports.build = function (distribution, callback) {
                 item.vars,
                 function (output) {
                 batch.push(function (callback) {
-                    var destination = root + unit.destinations[0];
+                    var destination = root + unit.destinations[0],
+                        isFinished = function () {
+                            ++finished;
+                            console.log([
+                                    "written: ",
+                                    item.vars.ROOT,
+                                    ", ",
+                                    finished,
+                                    "/",
+                                    total,
+                                    " -> ",
+                                    "\"",
+                                    destination,
+                                    "\""
+                                ].join(""));
+                            if (finished === total) {
+                                callback();
+                            }
+                        };
+
                     if (typeof output === "string") {
                         global.tools.file.write(destination,
                                 output,
-                                function (location) {
-                                    ++finished;
-                                    console.log("written: " +
-                                            item.vars.ROOT +
-                                            ", " +
-                                            finished +
-                                            "/" +
-                                            total +
-                                            " ~> " +
-                                            location);
-
-                                    if (finished === total) {
-                                        callback();
-                                    }
-                        });
+                                isFinished);
                     } else {
-                        ++finished;
-                        console.log("written: " +
-                                item.vars.ROOT +
-                                ", " +
-                                finished +
-                                "/" +
-                                total +
-                                " -> " +
-                                destination);
-
-                        if (finished === total) {
-                            callback();
-                        }
+                        isFinished();
                     }
                 });
 
                 // After all batches were assigned, call on them
-                ++i;
-                if (i === item.units.length) {
+                ++counter;
+                if (counter === item.units.length) {
                     callBatch(callback);
                 }
             });
 
 
     });
-
-    // return;
-
-
-
-    // units.forEach(function (unit) {
-    //     var u = find(global.config.units, unit),
-    //         root =  global.config.build.OUTPUT_DIRECTORY +
-    //                         "/" +
-    //                         item.vars.ROOT +
-    //                         "/";
-
-    //     if (u === null) {
-    //         global.tools.logTitle(unit + " not specified in units list");
-    //         callback("");
-    //         return;
-    //     }
-
-    //     global.tools.lastBuild(root);
-
-    //     exports.item(u,
-    //         item.vars,
-    //         function (output) {
-    //             batch.push(function (callback) {
-    //                 var destination = root + u.destinations[0];
-    //                 if (typeof output === "string") {
-    //                     global.tools.file.write(destination,
-    //                             output,
-    //                             function (location) {
-    //                                 ++finished;
-    //                                 logFile(item.vars.ROOT + ", " + finished + "/" + total + " ~> " + location);
-    //                                 if (finished === total) {
-    //                                     callback();
-    //                                 }
-    //                     });
-    //                 } else {
-    //                     ++finished;
-    //                     logFile(item.vars.ROOT + ", " + finished + "/" + total + " -> " + destination);
-    //                     if (finished === total) {
-    //                         callback();
-    //                     }
-    //                 }
-    //             });
-
-    //             // After all batches were assigned, call on them
-    //             ++i;
-    //             if (i === units.length) {
-    //                 callBatch(callback);
-    //             }
-    //         });
-    // });
 };
 
 

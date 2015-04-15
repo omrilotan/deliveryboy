@@ -1,13 +1,13 @@
 var extensions = {},
     exports = {};
 
-// Get all extensions rendering files
+// Load all extensions for rendering files
 exports.config = function (callback) {
-    global.tools.file.readDir("modules/extensions", function (result) {
+    global.tools.file.readDir("extensions", function (result) {
         var i = 0,
             len = result.length;
         result.forEach(function (item) {
-            extensions[item] = require("./extensions/" + item);
+            extensions[item] = require("../extensions/" + item);
         });
         callback();
         return;
@@ -19,13 +19,13 @@ exports.parse = function (data, vars, callback) {
 
     // Missing engine
     if (typeof extensions[data.type] !== "function") {
-        exports.logTitle("Missing extension " + data.type);
+        global.tools.logTitle("Missing extension " + data.type);
         return;
     }
 
     // No sources
     if (!data.sources.length) {
-        cexports.logTitle(data.destination + " has no sources");
+        global.tools.logTitle(data.destination + " has no sources");
         return;
     }
 

@@ -64,7 +64,7 @@ var UglifyJS = require("uglify-js"),
                                     warnings: false
                                 }).code);
                     } catch (err) {
-                        console.log(err);
+                        console.error(err);
                     }
                 } else {
                     callback(string);
