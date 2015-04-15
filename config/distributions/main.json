@@ -3,6 +3,7 @@
     "vars": {
         "MINIFY": "flase",
         "ROOT": "v1",
+        "INDEX": "index.html",
         "NOT_FOUND": "index.html",
         "CULTURE": "en-GB"
     },
