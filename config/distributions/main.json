@@ -1,5 +1,4 @@
 {
-    "name": "main",
     "vars": {
         "MINIFY": "flase",
         "ROOT": "v1",

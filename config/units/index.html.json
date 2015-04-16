@@ -1,5 +1,4 @@
 {
-    "name": "index.html",
     "type": "text",
     "destinations": ["index.html"],
     "sources": [

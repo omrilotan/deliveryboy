@@ -1,5 +1,4 @@
 {
-    "name": "styles.css",
     "type": "less",
     "destinations": ["styles.css"],
     "sources": [

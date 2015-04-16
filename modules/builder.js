@@ -28,6 +28,7 @@ exports.build = function (distribution, callback) {
 
     // Get the requested distribution details
     var item = global.tools.publication(distribution),
+        name = distribution,
         batch = [],
         callBatch = function (callback) {
             // Write all files
@@ -44,7 +45,7 @@ exports.build = function (distribution, callback) {
         "",
         "                         __o",
         "                        -\\<,",
-        "    Start building:     O/ O       \"" + item.name + "\"",
+        "    Start building:     O/ O       \"" + name + "\"",
         "`````````````````````````````````````````````````````",
         ""
         ].join("\n"));

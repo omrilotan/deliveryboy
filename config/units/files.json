@@ -1,5 +1,4 @@
 {
-    "name": "files",
     "type": "filesystem",
     "destinations": [""],
     "sources": [

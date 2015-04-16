@@ -57,7 +57,8 @@ exports.start = function (result) {
         return;
     }
 
-    var distribution = global.tools.publication(result.name),
+    var name = result.name,
+        distribution = global.tools.publication(name),
         port = result.port,
         root = !!distribution.vars.ROOT ? distribution.vars.ROOT : "",
         serving = global.config.build.OUTPUT_DIRECTORY + "/" + root,
@@ -81,8 +82,8 @@ exports.start = function (result) {
                             
                             // TODO: Decide if necessary
                             // See if this unit is a part of the distribution
-                            if (distribution.units.indexOf(unit.name) === -1) {
-                                global.tools.logTitle(unit.name + " is served but is not listed in the distribution");
+                            if (distribution.units.indexOf(req) === -1) {
+                                global.tools.logTitle(req + " is served but is not listed in the distribution");
                             }
 
                             // Unit found, build and serve
@@ -117,7 +118,7 @@ exports.start = function (result) {
                                         });
                                     response.write([
                                             "Request URL: " + request.url,
-                                            "Unit Name: " + unit.name,,
+                                            "Unit Name: " + name,
                                             "File and Unit not found"
                                         ].join("\n"));
                                     response.end();
@@ -164,7 +165,7 @@ exports.start = function (result) {
 
     console.log([
         "````````````````````````````````````````````````````````````````````````````````",
-        "     Listening on port " + port + ", Serving directory \"" + distribution.name + "\"",
+        "     Listening on port " + port + ", Serving directory \"" + name + "\"",
         "                         __o",
         "                        -\\<,",
         "                        O/ O                                   Let's Roll!",
