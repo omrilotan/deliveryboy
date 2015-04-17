@@ -12,7 +12,10 @@ exports.read = function (location, callback) {
     fs.readFile(location,
             options,
             function (err, data) {
-                if (err) { console.error(err); return; };
+                if (err && typeof err.path === "string") {
+                    global.tools.logTitle("Path Not Found: " + err.path);
+                }
+                if (err) { console.error(err); callback(""); return; };
                 callback(data);
             });
 };
