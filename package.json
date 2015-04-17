@@ -1,22 +1,22 @@
 {
     "name": "deliveryboy",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "main": "deliveryboy.js",
     "scripts": {},
     "repository": {
         "type": "git",
-        "url": "https://bitbucket.org/speax/deliveryboy.git"
+        "url": "https://bitbucket.org/omrilotan/deliveryboy.git"
     },
-    "author": "speax",
+    "author": "Omri",
     "maintainers": [
         {
             "name": "Omri",
-            "email": "omri.lotan@speax.io",
-            "web": "https://speax.io"
+            "email": "omri@hamadgera.com",
+            "web": "about:blank"
         }
     ],
     "license": "None",
-    "description": "Build system for static files",
+    "description": "Build engine for static files",
     "engines": {
         "node" : ">=0.10.X"
     },
