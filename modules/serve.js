@@ -58,8 +58,8 @@ exports.start = function (result) {
     }
 
     var name = result.name,
-        distribution = global.tools.publication(name),
         port = result.port,
+        distribution = global.tools.publication(name),
         root = !!distribution.vars.ROOT ? distribution.vars.ROOT : "",
         serving = global.config.build.OUTPUT_DIRECTORY + "/" + root,
 

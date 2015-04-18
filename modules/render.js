@@ -16,6 +16,7 @@ exports.config = function (callback) {
 
 // Parse a unit by it's type (using respective extension)
 exports.parse = function (data, vars, callback) {
+    var sources = [];
 
     // Missing engine
     if (typeof extensions[data.type] !== "function") {
@@ -29,7 +30,14 @@ exports.parse = function (data, vars, callback) {
         return;
     }
 
-    // Cool!
+    // TODO: Add explanation to this
+    data.sources.forEach(function (source, index, array) {
+        sources[index] = global.config.build.SOURCES_DIRECTORY +
+                "/" +
+                global.tools.stringReplacements(source, vars);
+    });
+    data.sources = sources;
+
     extensions[data.type].call(null, {
         conf: data,
         vars: vars

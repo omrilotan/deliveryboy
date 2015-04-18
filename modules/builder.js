@@ -10,11 +10,6 @@ exports.item = function (unit, vars, callback) {
     unit.sources = unit.sources.filter(function (source) {
         return source.indexOf("#") !== 0;
     });
-    unit.sources.forEach(function (source, index, array) {
-        array[index] = global.config.build.SOURCES_DIRECTORY +
-                "/" +
-                global.tools.stringReplacements(source, vars);
-    });
     global.tools.render.parse({
                     type: unit.type,
                     sources: unit.sources,

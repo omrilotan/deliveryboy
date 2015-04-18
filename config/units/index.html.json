@@ -2,6 +2,10 @@
     "type": "text",
     "destinations": ["index.html"],
     "sources": [
-        "html/index.html"
+        "html/1.open-html.html",
+        "html/2.head-html.html",
+        "html/3.body-open.html",
+        "html/index.html",
+        "html/4.close-html.html"
     ]
 }
