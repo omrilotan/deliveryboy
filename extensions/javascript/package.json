@@ -8,6 +8,6 @@
     },
     "dependencies": {
         "jshint"      : "~2.5.2",
-        "uglify-js"      : "~2.4.15"
+        "uglify-js"      : "~3.10.0"
     }
 }
